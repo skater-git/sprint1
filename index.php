@@ -62,7 +62,7 @@ function getBackPath($currentPath){
     }
 
      if (isset($_POST['delete'])){
-         $pathDelFile = './' . $_GET['path'] . '/' . $_POST['delete'];
+         $pathDelFile = $_POST['delete'];
          $pathDelFileFixed = str_replace("&nbsp;", " " , htmlentities($pathDelFile, null, 'utf-8'));
           if (is_file($pathDelFileFixed)){
               if (file_exists($pathDelFileFixed)){
@@ -75,13 +75,20 @@ function getBackPath($currentPath){
 
 
      if (isset($_POST['download'])){
-         $fileName = basename($_POST['download']);
+         $fileName = $_POST['download'];
+         if(file_exists($fileName)){
          header('Content-Type: application/octet-stream');
          header("Content-Transfer-Encoding: Binary");
-         header("Content-disposition: attachment; filename=\"$fileName\"");
-         readfile($_POST['download']);
+         header('Content-disposition: attachment; filename="' .basename($fileName).'"');
+         header('Content-Length: ' . filesize($fileName));
+         flush();
+         readfile($fileName);
+         die();
+     } else {
+         echo "File does not exist.";
      }
-
+    }
+    
 
     if (isset($_FILES['upload'])){
         $errors = array();
